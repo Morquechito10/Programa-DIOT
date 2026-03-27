@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador DIOT - Carga Masiva</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Generador de Carga Masiva DIOT</h1>
+            <p>Agrega múltiples proveedores y genera un solo archivo .txt listo para el SAT.</p>
+        </header>
+
+        <form id="diotForm">
+            <fieldset>
+                <legend>1. Identificación del Tercero</legend>
+                <div class="grid">
+                    <div class="field">
+                        <label for="f0">01. Tipo de Tercero</label>
+                        <select id="f0" name="tipoTercero">
+                            <option value="04">04 - Prov. Nacional</option>
+                            <option value="05">05 - Prov. Extranjero</option>
+                            <option value="15">15 - Prov. Global</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="f1">02. Tipo de Operación</label>
+                        <select id="f1" name="tipoOperacion">
+                            <option value="03">03 - Prestación de Serv. Prof.</option>
+                            <option value="06">06 - Arrendamiento</option>
+                            <option value="85">85 - Otros</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="f2">03. RFC (Nacional)</label>
+                        <input type="text" id="f2" name="rfc" placeholder="Ej. XAXX010101000" maxlength="13" />
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>2. Operaciones Gravadas e IVA (Subtotales pagados)</legend>
+                <div class="grid">
+                    <div class="field">
+                        <label for="f11">Valor Actos IVA 16%</label>
+                        <input type="number" id="f11" name="iva16" value="0" min="0" />
+                        <small class="hint">Ingresa el monto base (Subtotal antes de IVA) de las compras al 16%.</small>
+                    </div>
+                    <div class="field">
+                        <label for="f7">Valor Actos Frontera Norte (8%)</label>
+                        <input type="number" id="f7" name="iva8" value="0" min="0" />
+                        <small class="hint">Solo si aplica el estímulo de región fronteriza norte.</small>
+                    </div>
+                    <div class="field">
+                        <label for="f48">Valor Actos IVA 0%</label>
+                        <input type="number" id="f48" name="iva0" value="0" min="0" />
+                        <small class="hint">Subtotal de productos tasa 0%.</small>
+                    </div>
+                    <div class="field">
+                        <label for="f50">Valor Actos Exentos</label>
+                        <input type="number" id="f50" name="exentos" value="0" min="0" />
+                        <small class="hint">Subtotal de servicios exentos de IVA.</small>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div id="extraFieldsContainer" style="display: none;"></div>
+
+            <div class="actions">
+                <button type="button" id="btnAdd" class="btn-primary">➕ Agregar a la Lista</button>
+                <button type="reset" class="btn-secondary">Limpiar Campos</button>
+            </div>
+        </form>
+
+        <div class="table-container">
+            <h2>Registros a Exportar (<span id="contador">0</span>)</h2>
+            <table id="tablaRegistros">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>RFC</th>
+                        <th>Tipo</th>
+                        <th>Operación</th>
+                        <th>Subtotal 16%</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="listaCuerpo"></tbody>
+            </table>
+            
+            <button type="button" id="btnDownloadMasivo" class="btn-success" disabled>
+                ⬇️ Descargar Archivo Masivo .txt
+            </button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
