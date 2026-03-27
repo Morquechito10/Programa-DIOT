@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador DIOT - Carga Masiva</title>
+    <title>Generador DIOT - Carga Masiva SAT</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Generador de Carga Masiva DIOT</h1>
-            <p>Agrega múltiples proveedores y genera un solo archivo .txt listo para el SAT.</p>
+            <p>Agrega múltiples proveedores con validación estricta para el SAT.</p>
         </header>
 
         <form id="diotForm">
@@ -36,41 +36,58 @@
                     <div class="field">
                         <label for="f2">03. RFC (Nacional)</label>
                         <input type="text" id="f2" name="rfc" placeholder="Ej. XAXX010101000" maxlength="13" />
+                        <small class="hint">Debe tener 12 o 13 caracteres.</small>
                     </div>
                 </div>
             </fieldset>
 
             <fieldset>
-                <legend>2. Operaciones Gravadas e IVA (Subtotales pagados)</legend>
-                <div class="grid">
+                <legend>2. Operaciones Gravadas e IVA (Subtotales y Descuentos)</legend>
+                
+                <h3 style="font-size: 0.9rem; color: #2563eb; margin-bottom: 10px;">Tasa General (16%)</h3>
+                <div class="grid" style="margin-bottom: 20px;">
                     <div class="field">
                         <label for="f11">Valor Actos IVA 16%</label>
-                        <input type="number" id="f11" name="iva16" value="0" min="0" />
-                        <small class="hint">Ingresa el monto base (Subtotal antes de IVA) de las compras al 16%.</small>
+                        <input type="number" id="f11" name="iva16" value="0" min="0" step="1" />
                     </div>
                     <div class="field">
-                        <label for="f7">Valor Actos Frontera Norte (8%)</label>
-                        <input type="number" id="f7" name="iva8" value="0" min="0" />
-                        <small class="hint">Solo si aplica el estímulo de región fronteriza norte.</small>
+                        <label for="f12">Descuentos o Devoluciones (16%)</label>
+                        <input type="number" id="f12" name="dto16" value="0" min="0" step="1" style="border-color: #f59e0b;" />
                     </div>
+                </div>
+
+                <h3 style="font-size: 0.9rem; color: #2563eb; margin-bottom: 10px;">Región Fronteriza Norte (8%)</h3>
+                <div class="grid" style="margin-bottom: 20px;">
+                    <div class="field">
+                        <label for="f7">Valor Actos Frontera Norte</label>
+                        <input type="number" id="f7" name="iva8" value="0" min="0" step="1" />
+                    </div>
+                    <div class="field">
+                        <label for="f8">Descuentos Frontera Norte</label>
+                        <input type="number" id="f8" name="dto8" value="0" min="0" step="1" style="border-color: #f59e0b;" />
+                    </div>
+                </div>
+
+                <h3 style="font-size: 0.9rem; color: #2563eb; margin-bottom: 10px;">Otras Tasas</h3>
+                <div class="grid">
                     <div class="field">
                         <label for="f48">Valor Actos IVA 0%</label>
-                        <input type="number" id="f48" name="iva0" value="0" min="0" />
-                        <small class="hint">Subtotal de productos tasa 0%.</small>
+                        <input type="number" id="f48" name="iva0" value="0" min="0" step="1" />
                     </div>
                     <div class="field">
                         <label for="f50">Valor Actos Exentos</label>
-                        <input type="number" id="f50" name="exentos" value="0" min="0" />
-                        <small class="hint">Subtotal de servicios exentos de IVA.</small>
+                        <input type="number" id="f50" name="exentos" value="0" min="0" step="1" />
                     </div>
                 </div>
             </fieldset>
 
             <div id="extraFieldsContainer" style="display: none;"></div>
 
+            <div id="errorBox" class="error-message"></div>
+
             <div class="actions">
                 <button type="button" id="btnAdd" class="btn-primary">➕ Agregar a la Lista</button>
-                <button type="reset" class="btn-secondary">Limpiar Campos</button>
+                <button type="reset" class="btn-secondary" id="btnReset">Limpiar Campos</button>
             </div>
         </form>
 
@@ -81,9 +98,9 @@
                     <tr>
                         <th>#</th>
                         <th>RFC</th>
-                        <th>Tipo</th>
-                        <th>Operación</th>
-                        <th>Subtotal 16%</th>
+                        <th>Bruto 16%</th>
+                        <th>Dto 16%</th>
+                        <th>Neto 16%</th>
                         <th>Acción</th>
                     </tr>
                 </thead>

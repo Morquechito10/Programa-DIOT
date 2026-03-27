@@ -179,3 +179,20 @@ th {
 }
 
 .btn-delete:hover { background: #dc2626; }
+
+.error-message {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #f87171;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: none; 
+}
+
+.input-error {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+}
