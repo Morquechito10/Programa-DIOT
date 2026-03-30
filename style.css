@@ -196,3 +196,10 @@ th {
     border-color: #ef4444 !important;
     box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
 }
+
+.input-readonly {
+    background-color: #e2e8f0;
+    font-weight: bold;
+    color: #16a34a;
+    cursor: not-allowed; 
+}

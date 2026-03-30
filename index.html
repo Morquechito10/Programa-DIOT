@@ -1,117 +1,229 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Generador DIOT - Carga Masiva SAT</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div class="container">
-        <header>
-            <h1>Generador de Carga Masiva DIOT</h1>
-            <p>Agrega múltiples proveedores con validación estricta para el SAT.</p>
-        </header>
+      <header>
+        <h1>Generador de Carga Masiva DIOT</h1>
+        <p>
+          Automatización de Subtotales, IVA Acreditable y Retenciones (Layout 54
+          Campos).
+        </p>
+      </header>
 
-        <form id="diotForm">
-            <fieldset>
-                <legend>1. Identificación del Tercero</legend>
-                <div class="grid">
-                    <div class="field">
-                        <label for="f0">01. Tipo de Tercero</label>
-                        <select id="f0" name="tipoTercero">
-                            <option value="04">04 - Prov. Nacional</option>
-                            <option value="05">05 - Prov. Extranjero</option>
-                            <option value="15">15 - Prov. Global</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label for="f1">02. Tipo de Operación</label>
-                        <select id="f1" name="tipoOperacion">
-                            <option value="03">03 - Prestación de Serv. Prof.</option>
-                            <option value="06">06 - Arrendamiento</option>
-                            <option value="85">85 - Otros</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label for="f2">03. RFC (Nacional)</label>
-                        <input type="text" id="f2" name="rfc" placeholder="Ej. XAXX010101000" maxlength="13" />
-                        <small class="hint">Debe tener 12 o 13 caracteres.</small>
-                    </div>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>2. Operaciones Gravadas e IVA (Subtotales y Descuentos)</legend>
-                
-                <h3 style="font-size: 0.9rem; color: #2563eb; margin-bottom: 10px;">Tasa General (16%)</h3>
-                <div class="grid" style="margin-bottom: 20px;">
-                    <div class="field">
-                        <label for="f11">Valor Actos IVA 16%</label>
-                        <input type="number" id="f11" name="iva16" value="0" min="0" step="1" />
-                    </div>
-                    <div class="field">
-                        <label for="f12">Descuentos o Devoluciones (16%)</label>
-                        <input type="number" id="f12" name="dto16" value="0" min="0" step="1" style="border-color: #f59e0b;" />
-                    </div>
-                </div>
-
-                <h3 style="font-size: 0.9rem; color: #2563eb; margin-bottom: 10px;">Región Fronteriza Norte (8%)</h3>
-                <div class="grid" style="margin-bottom: 20px;">
-                    <div class="field">
-                        <label for="f7">Valor Actos Frontera Norte</label>
-                        <input type="number" id="f7" name="iva8" value="0" min="0" step="1" />
-                    </div>
-                    <div class="field">
-                        <label for="f8">Descuentos Frontera Norte</label>
-                        <input type="number" id="f8" name="dto8" value="0" min="0" step="1" style="border-color: #f59e0b;" />
-                    </div>
-                </div>
-
-                <h3 style="font-size: 0.9rem; color: #2563eb; margin-bottom: 10px;">Otras Tasas</h3>
-                <div class="grid">
-                    <div class="field">
-                        <label for="f48">Valor Actos IVA 0%</label>
-                        <input type="number" id="f48" name="iva0" value="0" min="0" step="1" />
-                    </div>
-                    <div class="field">
-                        <label for="f50">Valor Actos Exentos</label>
-                        <input type="number" id="f50" name="exentos" value="0" min="0" step="1" />
-                    </div>
-                </div>
-            </fieldset>
-
-            <div id="extraFieldsContainer" style="display: none;"></div>
-
-            <div id="errorBox" class="error-message"></div>
-
-            <div class="actions">
-                <button type="button" id="btnAdd" class="btn-primary">➕ Agregar a la Lista</button>
-                <button type="reset" class="btn-secondary" id="btnReset">Limpiar Campos</button>
+      <form id="diotForm">
+        <fieldset>
+          <legend>1. Identificación del Tercero</legend>
+          <div class="grid">
+            <div class="field">
+              <label for="f0">01. Tipo de Tercero</label>
+              <select id="f0" name="tipoTercero">
+                <option value="04">04 - Prov. Nacional</option>
+                <option value="05">05 - Prov. Extranjero</option>
+                <option value="15">15 - Prov. Global</option>
+              </select>
             </div>
-        </form>
+            <div class="field">
+              <label for="f1">02. Tipo de Operación</label>
+              <select id="f1" name="tipoOperacion">
+                <option value="03">03 - Prestación de Serv. Prof.</option>
+                <option value="06">06 - Arrendamiento</option>
+                <option value="85">85 - Otros</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f2">03. RFC (Nacional)</label>
+              <input
+                type="text"
+                id="f2"
+                name="rfc"
+                placeholder="Ej. XAXX010101000"
+                maxlength="13"
+              />
+              <small class="hint">12 o 13 caracteres.</small>
+            </div>
+          </div>
+        </fieldset>
 
-        <div class="table-container">
-            <h2>Registros a Exportar (<span id="contador">0</span>)</h2>
-            <table id="tablaRegistros">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>RFC</th>
-                        <th>Bruto 16%</th>
-                        <th>Dto 16%</th>
-                        <th>Neto 16%</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="listaCuerpo"></tbody>
-            </table>
-            
-            <button type="button" id="btnDownloadMasivo" class="btn-success" disabled>
-                ⬇️ Descargar Archivo Masivo .txt
-            </button>
+        <fieldset>
+          <legend>2. Operaciones Gravadas (Subtotales y Descuentos)</legend>
+          <h3 style="font-size: 0.9rem; color: #2563eb; margin-bottom: 10px">
+            Tasa General (16%)
+          </h3>
+          <div class="grid" style="margin-bottom: 20px">
+            <div class="field">
+              <label for="f11">Valor Actos IVA 16% (Bruto)</label>
+              <input
+                type="number"
+                id="f11"
+                name="iva16"
+                value="0"
+                min="0"
+                step="1"
+              />
+            </div>
+            <div class="field">
+              <label for="f12">Descuentos o Devoluciones (16%)</label>
+              <input
+                type="number"
+                id="f12"
+                name="dto16"
+                value="0"
+                min="0"
+                step="1"
+                style="border-color: #f59e0b"
+              />
+            </div>
+          </div>
+
+          <h3 style="font-size: 0.9rem; color: #2563eb; margin-bottom: 10px">
+            Región Fronteriza Norte (8%)
+          </h3>
+          <div class="grid" style="margin-bottom: 20px">
+            <div class="field">
+              <label for="f7">Valor Actos Frontera Norte</label>
+              <input
+                type="number"
+                id="f7"
+                name="iva8"
+                value="0"
+                min="0"
+                step="1"
+              />
+            </div>
+            <div class="field">
+              <label for="f8">Descuentos Frontera Norte</label>
+              <input
+                type="number"
+                id="f8"
+                name="dto8"
+                value="0"
+                min="0"
+                step="1"
+                style="border-color: #f59e0b"
+              />
+            </div>
+          </div>
+
+          <h3 style="font-size: 0.9rem; color: #2563eb; margin-bottom: 10px">
+            Otras Tasas
+          </h3>
+          <div class="grid">
+            <div class="field">
+              <label for="f48">Valor Actos IVA 0%</label>
+              <input
+                type="number"
+                id="f48"
+                name="iva0"
+                value="0"
+                min="0"
+                step="1"
+              />
+            </div>
+            <div class="field">
+              <label for="f50">Valor Actos Exentos</label>
+              <input
+                type="number"
+                id="f50"
+                name="exentos"
+                value="0"
+                min="0"
+                step="1"
+              />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset style="background-color: #f8fafc; border-color: #cbd5e1">
+          <legend style="color: #0f172a">
+            3. Cálculo de IVA y Retenciones
+          </legend>
+          <div class="grid">
+            <div class="field">
+              <label for="tipoAcreditamiento">Destino del IVA (16%)</label>
+              <select id="tipoAcreditamiento" style="border-color: #3b82f6">
+                <option value="100">100% Acreditable (Act. Gravadas)</option>
+                <option value="prop">Proporción (Act. Mixtas)</option>
+                <option value="0">No Acreditable (No deducible)</option>
+              </select>
+              <small class="hint"
+                >Define en qué columna del layout caerá el IVA.</small
+              >
+            </div>
+            <div class="field">
+              <label>IVA 16% Calculado (Automático)</label>
+              <input
+                type="text"
+                id="ivaVisual"
+                value="$0"
+                readonly
+                class="input-readonly"
+                title="IVA 16% Calculado automáticamente"
+              />
+              <small class="hint">(Bruto - Descuento) x 0.16</small>
+            </div>
+            <div class="field">
+              <label for="f22">IVA Retenido (Campo 23)</label>
+              <input
+                type="number"
+                id="f22"
+                name="retenido"
+                value="0"
+                min="0"
+                step="1"
+                style="border-color: #ef4444"
+              />
+              <small class="hint"
+                >Retención efectuada (Ej. Honorarios o Fletes).</small
+              >
+            </div>
+          </div>
+        </fieldset>
+
+        <div id="extraFieldsContainer" style="display: none"></div>
+        <div id="errorBox" class="error-message"></div>
+
+        <div class="actions">
+          <button type="button" id="btnAdd" class="btn-primary">
+            ➕ Agregar a la Lista
+          </button>
+          <button type="reset" class="btn-secondary" id="btnReset">
+            Limpiar Campos
+          </button>
         </div>
+      </form>
+
+      <div class="table-container">
+        <h2>Registros a Exportar (<span id="contador">0</span>)</h2>
+        <table id="tablaRegistros">
+          <thead>
+            <tr>
+              <th>RFC</th>
+              <th>Bruto 16%</th>
+              <th>Dto 16%</th>
+              <th>IVA Acreditable</th>
+              <th>Retenido</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="listaCuerpo"></tbody>
+        </table>
+
+        <button
+          type="button"
+          id="btnDownloadMasivo"
+          class="btn-success"
+          disabled
+        >
+          ⬇️ Descargar Archivo Masivo .txt
+        </button>
+      </div>
     </div>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
