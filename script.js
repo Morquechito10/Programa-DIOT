@@ -1,190 +1,171 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const extraFieldsContainer = document.getElementById('extraFieldsContainer');
+    // Referencias
     const btnAdd = document.getElementById('btnAdd');
-    const btnDownloadMasivo = document.getElementById('btnDownloadMasivo');
-    const btnReset = document.getElementById('btnReset');
-    const listaCuerpo = document.getElementById('listaCuerpo');
-    const contador = document.getElementById('contador');
-    const form = document.getElementById('diotForm');
+    const btnPreview = document.getElementById('btnPreview');
+    const btnCloseModal = document.getElementById('btnCloseModal');
+    const modal = document.getElementById('satModal');
     const rfcInput = document.getElementById('f2');
     const errorBox = document.getElementById('errorBox');
-
+    
     let listaDIOT = [];
 
+    // ==========================================
+    // MAPA EXACTO DE COLUMNAS (54 POSICIONES)
+    // ==========================================
+    // *AQUÍ DEBES AJUSTAR LOS NÚMEROS CUANDO TENGAS EL MANUAL OFICIAL DEL SAT*
+    const MAPA = {
+        TIPO_TERCERO: 0,
+        TIPO_OPERACION: 1,
+        RFC: 2,
+        BASE_16: 11,      // Valor Bruto al 16%
+        DTO_16: 12,       // Descuento al 16%
+        // Estos son los que el SAT movió. (Los pongo en 30 y 31 como ejemplo)
+        IVA_EXCLUSIVO_16: 30, 
+        IVA_PROPORCION_16: 31,
+        EFECTOS_FISCALES: 53  // Última posición (Obligatorio '01')
+    };
 
-    for (let i = 0; i < 54; i++) {
-        if (!document.getElementById(`f${i}`)) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.id = `f${i}`;
-            
-            if (i === 53) {
-                input.value = '01'; 
-            } else if (i >= 7) {
-                input.value = '0';  
-            } else {
-                input.value = '';
-            }
-            extraFieldsContainer.appendChild(input);
-        }
-    }
-
-    function calcularImpuestos() {
-        const bruto16 = parseFloat(document.getElementById('f11').value) || 0;
-        const dto16 = parseFloat(document.getElementById('f12').value) || 0;
-        
-        const neto16 = Math.max(0, bruto16 - dto16);
-        
-        const iva16Calculado = Math.round(neto16 * 0.16);
-        
-        document.getElementById('ivaVisual').value = `$${iva16Calculado}`;
-    }
+    // Formatear RFC y calcular IVA en vivo
+    rfcInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    });
 
     ['f11', 'f12'].forEach(id => {
         document.getElementById(id).addEventListener('input', () => {
-            calcularImpuestos();
-            quitarError(document.getElementById(id));
+            const bruto16 = parseFloat(document.getElementById('f11').value) || 0;
+            const dto16 = parseFloat(document.getElementById('f12').value) || 0;
+            const neto16 = Math.max(0, bruto16 - dto16);
+            document.getElementById('ivaVisual').value = `$${Math.round(neto16 * 0.16)}`;
         });
     });
 
-    rfcInput.addEventListener('input', function() {
-        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        quitarError(this);
-    });
-
-    function validarFormulario() {
-        let esValido = true;
-        let mensajeError = "";
-
-        const rfcVal = rfcInput.value.trim();
-        const bruto16 = parseFloat(document.getElementById('f11').value) || 0;
-        const dto16 = parseFloat(document.getElementById('f12').value) || 0;
-
-        if (rfcVal.length !== 12 && rfcVal.length !== 13) {
-            marcarError(rfcInput);
-            mensajeError += "• El RFC debe tener 12 o 13 caracteres.<br>";
-            esValido = false;
-        }
-
-        if (dto16 > bruto16) {
-            marcarError(document.getElementById('f12'));
-            mensajeError += "• El descuento NO puede ser mayor al Valor Bruto.<br>";
-            esValido = false;
-        }
-
-        if (!esValido) {
-            errorBox.innerHTML = mensajeError;
-            errorBox.style.display = "block";
-        }
-
-        return esValido;
-    }
-
-    function marcarError(el) { el.classList.add('input-error'); }
-    function quitarError(el) { 
-        el.classList.remove('input-error'); 
-        errorBox.style.display = "none"; 
-    }
-
-    btnAdd.addEventListener('click', () => {
-        if (!validarFormulario()) return;
-
+    // ==========================================
+    // LÓGICA DEL SIMULADOR SAT
+    // ==========================================
+    btnPreview.addEventListener('click', () => {
         const bruto16 = Math.round(parseFloat(document.getElementById('f11').value) || 0);
         const dto16 = Math.round(parseFloat(document.getElementById('f12').value) || 0);
-        const neto16 = bruto16 - dto16;
-        const ivaCalculado = Math.round(neto16 * 0.16);
         
+        if(dto16 > bruto16) {
+            alert("Error: El descuento no puede ser mayor al valor bruto.");
+            return;
+        }
+
+        const neto16 = bruto16 - dto16;
+        const iva16 = Math.round(neto16 * 0.16);
         const acreditamiento = document.getElementById('tipoAcreditamiento').value;
 
-        document.getElementById('f14').value = '0';
-        document.getElementById('f15').value = '0';
-        document.getElementById('f16').value = '0';
+        // Llenar Pestaña 1 (Valores)
+        document.getElementById('sat_bruto16').value = bruto16.toLocaleString();
+        document.getElementById('sat_dto16').value = dto16.toLocaleString();
+        document.getElementById('sat_neto16').value = neto16.toLocaleString();
+        document.getElementById('sat_iva_pagado16').value = iva16.toLocaleString();
 
-        if (acreditamiento === '100') {
-            document.getElementById('f14').value = ivaCalculado.toString();
-        } else if (acreditamiento === 'prop') {
-            document.getElementById('f15').value = ivaCalculado.toString();
-        } else if (acreditamiento === '0') {
-            document.getElementById('f16').value = ivaCalculado.toString();
+        // Llenar Pestaña 2 (Acreditamiento)
+        document.getElementById('sat_iva_exclusivo').value = (acreditamiento === 'exclusivo') ? iva16.toLocaleString() : '0';
+        document.getElementById('sat_iva_prop').value = (acreditamiento === 'proporcion') ? iva16.toLocaleString() : '0';
+        document.getElementById('sat_iva_total').value = (acreditamiento !== 'no_acreditable') ? iva16.toLocaleString() : '0';
+
+        // Mostrar Modal
+        modal.style.display = 'flex';
+    });
+
+    btnCloseModal.addEventListener('click', () => { modal.style.display = 'none'; });
+
+    // Cambiar pestañas en el simulador
+    document.getElementById('tab1').addEventListener('click', function() {
+        this.classList.add('active'); document.getElementById('tab2').classList.remove('active');
+        document.getElementById('satView1').style.display = 'block';
+        document.getElementById('satView2').style.display = 'none';
+    });
+    document.getElementById('tab2').addEventListener('click', function() {
+        this.classList.add('active'); document.getElementById('tab1').classList.remove('active');
+        document.getElementById('satView2').style.display = 'block';
+        document.getElementById('satView1').style.display = 'none';
+    });
+
+    // ==========================================
+    // GENERACIÓN DEL TXT
+    // ==========================================
+    btnAdd.addEventListener('click', () => {
+        const bruto16 = Math.round(parseFloat(document.getElementById('f11').value) || 0);
+        const dto16 = Math.round(parseFloat(document.getElementById('f12').value) || 0);
+        
+        if (dto16 > bruto16 || rfcInput.value.length < 12) {
+            errorBox.innerHTML = "Por favor verifica el RFC (12-13 caracteres) y que el Descuento no supere al Bruto.";
+            errorBox.style.display = "block";
+            return;
         }
 
-        let registroFila = [];
-        for (let i = 0; i < 54; i++) {
-            const input = document.getElementById(`f${i}`);
-            let valor = input ? input.value.trim().replace(/\|/g, "") : "";
-            
-            if (i === 53) {
-                valor = "01"; 
-            } else if (i >= 7) {
-                if (valor === "") valor = "0";
-                else valor = Math.round(parseFloat(valor)).toString();
-            }
-            registroFila.push(valor);
+        const neto16 = bruto16 - dto16;
+        const ivaCalculado = Math.round(neto16 * 0.16);
+        const acreditamiento = document.getElementById('tipoAcreditamiento').value;
+
+        // Inicializar arreglo de 54 vacíos
+        let registroTxt = new Array(54).fill("");
+
+        // Llenar datos básicos
+        registroTxt[MAPA.TIPO_TERCERO] = document.getElementById('f0').value;
+        registroTxt[MAPA.TIPO_OPERACION] = document.getElementById('f1').value;
+        registroTxt[MAPA.RFC] = rfcInput.value;
+        
+        // Llenar Montos Base y Descuentos
+        registroTxt[MAPA.BASE_16] = bruto16.toString();
+        registroTxt[MAPA.DTO_16] = dto16.toString();
+
+        // Llenar IVA Acreditable según selección (Desplazado para evitar error del SAT)
+        if (acreditamiento === 'exclusivo') {
+            registroTxt[MAPA.IVA_EXCLUSIVO_16] = ivaCalculado.toString();
+        } else if (acreditamiento === 'proporcion') {
+            registroTxt[MAPA.IVA_PROPORCION_16] = ivaCalculado.toString();
         }
 
-        const lineaTexto = registroFila.join('|');
-        const ivaRetenido = Math.round(parseFloat(document.getElementById('f22').value) || 0);
+        // Llenar ceros obligatorios en campos de monto vacíos y código final
+        for (let i = 7; i < 53; i++) {
+            if (registroTxt[i] === "") registroTxt[i] = "0";
+        }
+        registroTxt[MAPA.EFECTOS_FISCALES] = "01";
 
         listaDIOT.push({
-            textoFinal: lineaTexto,
-            rfc: document.getElementById('f2').value,
-            bruto16: bruto16,
-            dto16: dto16,
-            ivaAcreditable: acreditamiento === '100' ? ivaCalculado : 0,
-            retenido: ivaRetenido
+            textoFinal: registroTxt.join('|'),
+            rfc: rfcInput.value,
+            bruto: bruto16,
+            dto: dto16,
+            iva: ivaCalculado
         });
 
-        actualizarTabla();
-        btnReset.click(); 
-        document.getElementById('f0').focus();
-    });
-
-    btnReset.addEventListener('click', () => {
-        setTimeout(() => {
-            ['f11', 'f12', 'f7', 'f8', 'f48', 'f50', 'f22'].forEach(id => {
-                document.getElementById(id).value = '0';
-            });
-            document.getElementById('ivaVisual').value = '$0';
-            document.getElementById('tipoAcreditamiento').value = '100';
-            errorBox.style.display = "none";
-            document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-        }, 10);
-    });
-
-    function actualizarTabla() {
+        // Actualizar UI
+        document.getElementById('f11').value = '0';
+        document.getElementById('f12').value = '0';
+        document.getElementById('ivaVisual').value = '$0';
+        errorBox.style.display = "none";
+        
+        // Refrescar tabla inferior
+        const listaCuerpo = document.getElementById('listaCuerpo');
         listaCuerpo.innerHTML = '';
         listaDIOT.forEach((item, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>${item.rfc}</strong></td>
-                <td>$${item.bruto16}</td>
-                <td style="color: #ea580c;">-$${item.dto16}</td>
-                <td style="font-weight: bold; color: #16a34a;">$${item.ivaAcreditable}</td>
-                <td style="color: #ef4444;">$${item.retenido}</td>
-                <td><button type="button" class="btn-delete" onclick="eliminarFila(${index})">Eliminar</button></td>
-            `;
-            listaCuerpo.appendChild(tr);
+            listaCuerpo.innerHTML += `<tr>
+                <td>${item.rfc}</td><td>$${item.bruto}</td><td>-$${item.dto}</td><td>$${item.iva}</td>
+                <td><button onclick="eliminarFila(${index})">Eliminar</button></td>
+            </tr>`;
         });
-        contador.textContent = listaDIOT.length;
-        btnDownloadMasivo.disabled = listaDIOT.length === 0;
-    }
+        document.getElementById('contador').textContent = listaDIOT.length;
+        document.getElementById('btnDownloadMasivo').disabled = false;
+    });
 
     window.eliminarFila = function(index) {
         listaDIOT.splice(index, 1);
-        actualizarTabla();
+        document.getElementById('contador').textContent = listaDIOT.length;
+        if(listaDIOT.length === 0) document.getElementById('btnDownloadMasivo').disabled = true;
+        btnAdd.click(); // Hack para redibujar la tabla
     };
 
-    btnDownloadMasivo.addEventListener('click', () => {
-        if (listaDIOT.length === 0) return;
+    document.getElementById('btnDownloadMasivo').addEventListener('click', () => {
         const contenidoTxt = listaDIOT.map(item => item.textoFinal).join('\r\n');
         const blob = new Blob([contenidoTxt], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.href = url;
-        link.download = `DIOT_EXPERT_${listaDIOT.length}_REGISTROS.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        link.href = url; link.download = `DIOT_EXPERT_54CAMPOS.txt`;
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
     });
 });

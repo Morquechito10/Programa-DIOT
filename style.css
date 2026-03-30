@@ -203,3 +203,60 @@ th {
     color: #16a34a;
     cursor: not-allowed; 
 }
+
+.input-readonly {
+    background-color: #e2e8f0;
+    font-weight: bold;
+    color: #16a34a;
+    cursor: not-allowed;
+}
+/* --- ESTILOS DEL SIMULADOR SAT --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7); z-index: 1000;
+    display: flex; justify-content: center; align-items: center;
+}
+.modal-content {
+    background: #f4f4f5; width: 95%; max-width: 1000px;
+    border-radius: 8px; overflow: hidden; font-family: Arial, sans-serif;
+}
+.modal-header {
+    background: #333; color: white; padding: 15px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.sat-tabs {
+    display: flex; background: #e4e4e7; border-bottom: 2px solid #d4d4d8;
+}
+.sat-tab {
+    padding: 12px 20px; cursor: pointer; color: #52525b; font-weight: bold;
+}
+.sat-tab.active {
+    background: white; border-top: 3px solid #b91c1c; color: #18181b;
+}
+.sat-view { padding: 20px; background: white; }
+.sat-row-header {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 10px;
+    font-size: 0.8rem; color: #52525b; margin-bottom: 10px;
+}
+.sat-view#satView2 .sat-row-header, .sat-view#satView2 .sat-row {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+}
+.sat-row {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 10px;
+    font-size: 0.85rem; align-items: center; padding-bottom: 15px;
+}
+.sat-input {
+    width: 100%; padding: 6px; background: #e4e4e7;
+    border: 1px solid #d4d4d8; text-align: right; border-radius: 3px;
+    color: #3f3f46;
+}
+/* --- UTILIDADES VISUALES NUEVAS --- */
+.border-warning { border-color: #f59e0b !important; }
+.border-primary { border-color: #3b82f6 !important; }
+.bg-light { background-color: #f8fafc; }
+.btn-preview { background-color: #4f46e5 !important; }
+.btn-close-modal {
+    background: #ef4444; color: white; border: none; 
+    padding: 5px 10px; cursor: pointer; border-radius: 4px;
+}
+.btn-close-modal:hover { background: #dc2626; }
