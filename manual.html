@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario - Carga Masiva DIOT</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --accent: #e0e7ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
+        }
+
+        header p {
+            color: var(--secondary);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        h2 {
+            color: #0f172a;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            color: var(--primary);
+            margin-top: 25px;
+        }
+
+        .alert {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        .alert strong { color: #d97706; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--accent);
+            color: var(--primary);
+            font-weight: bold;
+            width: 25%;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .step-number {
+            background-color: var(--primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-right: 15px;
+            margin-top: 3px;
+        }
+
+        .badge {
+            background: #e2e8f0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #334155;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Manual de Usuario</h1>
+            <p>Generador de Carga Masiva DIOT (Layout 54 Campos - SAT 2025)</p>
+        </header>
+
+        <p>Bienvenido a la herramienta de generación masiva para la <strong>Declaración Informativa de Operaciones con Terceros (DIOT)</strong>. Este sistema está diseñado para cumplir con el nuevo formato estricto del SAT, automatizando los cálculos de IVA y organizando la información en las columnas correctas para evitar errores de validación.</p>
+
+        <div class="alert">
+            <strong>⚠️ Importante sobre los montos:</strong> El SAT prohíbe el uso de decimales en el archivo de carga masiva. Ingrese cantidades redondeadas. Nuestra herramienta se encargará de cualquier ajuste matemático menor automáticamente.
+        </div>
+
+        <h2>Sección 1: Identificación del Tercero</h2>
+        <p>En esta sección se define quién es el proveedor y qué tipo de gasto representa para la empresa.</p>
+        <table>
+            <tr>
+                <th>01. Tipo de Tercero</th>
+                <td>
+                    Define el origen del proveedor: <br>
+                    <span class="badge">04</span> <strong>Proveedor Nacional:</strong> Empresas o personas dentro de México.<br>
+                    <span class="badge">05</span> <strong>Proveedor Extranjero:</strong> Proveedores sin RFC mexicano.<br>
+                    <span class="badge">15</span> <strong>Proveedor Global:</strong> Usado para agrupar gastos menores no deducibles.
+                </td>
+            </tr>
+            <tr>
+                <th>02. Tipo de Operación</th>
+                <td>
+                    Clasifica la naturaleza del gasto:<br>
+                    <span class="badge">03</span> <strong>Servicios Profesionales:</strong> Honorarios a contadores, médicos, abogados, etc.<br>
+                    <span class="badge">06</span> <strong>Arrendamiento:</strong> Renta de oficinas, locales o maquinaria.<br>
+                    <span class="badge">85</span> <strong>Otros:</strong> Compra de mercancía en general, papelería, gasolina, etc. (Es el más común).
+                </td>
+            </tr>
+            <tr>
+                <th>03. RFC</th>
+                <td>Debe contener exactamente <strong>12 caracteres</strong> para Personas Morales o <strong>13 caracteres</strong> para Personas Físicas. El sistema lo convertirá a mayúsculas automáticamente.</td>
+            </tr>
+        </table>
+
+        <h2>Sección 2: Operaciones Gravadas (Montos)</h2>
+        <p>En el nuevo layout de 54 campos, <strong>el SAT exige reportar los descuentos por separado</strong>. Ya no se debe ingresar el subtotal neto directamente.</p>
+        
+        <table>
+            <tr>
+                <th>Valor de Actos (Bruto)</th>
+                <td>Es el <strong>Subtotal original de la factura</strong> antes de aplicarle cualquier descuento y antes de sumar el IVA.</td>
+            </tr>
+            <tr>
+                <th>Descuentos o Devoluciones</th>
+                <td>Es el monto de la rebaja o nota de crédito aplicada a esa factura. Si la factura no tiene descuentos, deje este campo en <strong>0</strong>.<br><br>
+                <em>Nota: El sistema restará el descuento al valor bruto de forma invisible para calcular el IVA correcto.</em></td>
+            </tr>
+        </table>
+
+        <h3>Distribución de Tasas</h3>
+        <ul>
+            <li><strong>Tasa General (16%):</strong> La mayoría de las compras y gastos a nivel nacional.</li>
+            <li><strong>Frontera Norte (8%):</strong> Solo si el proveedor aplicó explícitamente el estímulo fiscal fronterizo en su XML.</li>
+            <li><strong>Tasa 0%:</strong> Productos que tienen IVA pero a tasa cero (ej. alimentos sin procesar, libros, medicinas).</li>
+            <li><strong>Exentos:</strong> Servicios que la ley marca exentos del impuesto (ej. honorarios médicos).</li>
+        </ul>
+
+        <h2>Sección 3: Cálculo de IVA y Retenciones</h2>
+        <p>Esta es la parte más crítica del nuevo formato. Indica hacia qué columna contable se debe enviar el IVA calculado.</p>
+
+        <table>
+            <tr>
+                <th>Destino del IVA</th>
+                <td>
+                    <ul>
+                        <li><strong>100% Acreditable:</strong> Seleccione esta opción si el gasto es estrictamente indispensable y 100% deducible.</li>
+                        <li><strong>Proporción:</strong> Úselo solo si su empresa tiene ingresos mixtos (gravados y exentos) y el contador le ha indicado que debe aplicar un factor de prorrateo.</li>
+                        <li><strong>No Acreditable:</strong> Para gastos que no cumplen requisitos fiscales (ej. falta de factura, pago en efectivo mayor a $2,000).</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>IVA Calculado</th>
+                <td>Este campo es de <strong>solo lectura</strong>. El sistema multiplica el <em>(Valor Bruto - Descuento) x 0.16</em> para garantizar que el impuesto sea matemáticamente perfecto.</td>
+            </tr>
+            <tr>
+                <th>IVA Retenido</th>
+                <td>Capture aquí las retenciones de IVA que su empresa le haya hecho al proveedor (Aplica principalmente al pagar honorarios a Personas Físicas o servicios de fletes).</td>
+            </tr>
+        </table>
+
+        <h2>Instrucciones de Uso (Paso a Paso)</h2>
+        
+        <div class="step">
+            <div class="step-number">1</div>
+            <div><strong>Capture los datos del proveedor:</strong> Llene el formulario de arriba hacia abajo asegurándose de no dejar campos obligatorios en blanco.</div>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <div><strong>Verifique con el Simulador:</strong> Haga clic en el botón <span class="badge">👁️ Vista Previa SAT</span>. Se abrirá una ventana idéntica a la plataforma oficial del SAT. Compruebe que los montos cuadren con sus papeles de trabajo.</div>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <div><strong>Agregue a la Lista:</strong> Si la información es correcta, presione <span class="badge">➕ Agregar a la Lista</span>. El registro bajará a la tabla inferior y el formulario se limpiará para capturar la siguiente factura.</div>
+        </div>
+        <div class="step">
+            <div class="step-number">4</div>
+            <div><strong>Descargue el Archivo:</strong> Una vez capturados todos sus proveedores del mes, presione el botón verde <span class="badge">⬇️ Descargar Archivo Masivo .txt</span>. El sistema unirá toda la información con la estructura de barras verticales (<code>|</code>) que el SAT requiere.</div>
+        </div>
+        <div class="step">
+            <div class="step-number">5</div>
+            <div><strong>Suba al SAT:</strong> Ingrese a la plataforma de Declaraciones del SAT, seleccione "Carga Batch" y seleccione el archivo <code>.txt</code> descargado.</div>
+        </div>
+
+    </div>
+
+</body>
+</html>
